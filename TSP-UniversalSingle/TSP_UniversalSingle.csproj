@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<!--TargetFramework>net7.0</TargetFramework-->
+		<TargetFramework>net6.0</TargetFramework>
+		<RootNamespace>Standardization</RootNamespace>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<AssemblyName>$(MSBuildProjectName)</AssemblyName>
+		<PublishTrimmed>true</PublishTrimmed>
+		<Version>1.1.1</Version>
+	</PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	 <Optimize>true</Optimize>
+	 <DebugType>pdbonly</DebugType>
+  </PropertyGroup>
+	<ItemGroup>
+		<Content Include="Assets\**" LinkBase="Assets\" CopyToOutputDirectory="PreserveNewest"></Content>
+	</ItemGroup>
+
+</Project>
