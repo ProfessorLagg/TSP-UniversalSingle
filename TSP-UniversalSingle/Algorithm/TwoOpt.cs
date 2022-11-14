@@ -13,34 +13,39 @@ namespace TSPStandard.Algorithm
         }
         public override void Run()
         {
-            int Runs = 0;
-            ConcurrentDictionary<float, (int A, int B)> routes = new();
             int L = this.Route.Length;
-        GenNew:
-            routes.Clear();
-            Vector2[] tempBase = Route.ToArray();
-            Parallel.For(1, L, A =>
-            //for (int A = 2; A < L; A++)
+            bool changed = false;
+            do
             {
-                Span<Vector2> workerSpan = (Vector2[])tempBase.Clone();
-                for (int B = 0; B < A; B++)
+                changed = false;
+                Vector2[] tempBase = Route.ToArray();
+                Vector2[] bestTour = tempBase.ToArray();
+                float bestCost = bestTour.Cost();
+                Parallel.For(1, L, A =>
                 {
-                    workerSpan.Slice(B, A - B).Reverse();
-                    routes.TryAdd(workerSpan.Cost(), (A, B));
-                    workerSpan.Slice(B, A - B).Reverse();
+                    Vector2[] workerArray = tempBase.ToArray();
+                    Span<Vector2> workerSpan = new(workerArray);
+                    for (int B = 0; B < A; B++)
+                    {
+                        workerSpan.Slice(B, A - B).Reverse();
+                        if (workerSpan.Cost() < bestCost)
+                        {
+                            lock (bestTour)
+                            {
+                                bestTour = workerArray.ToArray();
+                                bestCost = bestTour.Cost();
+                            }
+                        }
+                        workerSpan.Slice(B, A - B).Reverse();
+                    }
+                });
+                TSPRoute bestFound = new(this.Route.RouteName, bestTour.ToArray());
+                if (bestFound.Cost < this.Route.Cost)
+                {
+                    this.Route = new(bestFound);
+                    changed = true;
                 }
-            });
-            (int A, int B) bestIndex = routes[routes.Keys.Min()];
-
-            Span<Vector2> bestRoute = Route.ToArray();
-            bestRoute.Slice(bestIndex.B, bestIndex.A - bestIndex.B).Reverse();
-            TSPRoute bestFound = new(this.Route.RouteName, bestRoute.ToArray());
-            Runs += routes.Count;
-            if (bestFound.Cost < this.Route.Cost)
-            {
-                this.Route = new(bestFound);
-                goto GenNew;
-            }
+            } while (changed);
         }
     }
 }
