@@ -9,8 +9,8 @@
 		<Nullable>enable</Nullable>
 		<AssemblyName>$(MSBuildProjectName)</AssemblyName>
 		<PublishTrimmed>true</PublishTrimmed>
-		<Version>1.1.2</Version>
-			<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+		<Version>1.1.3</Version>
+		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
 		<PublishAot>true</PublishAot>
 	</PropertyGroup>
 	
