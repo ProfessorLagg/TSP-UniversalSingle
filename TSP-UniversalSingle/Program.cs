@@ -4,6 +4,8 @@ using TSPStandard;
 using System.IO;
 using System.Reflection;
 using TSPStandard.Algorithm;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 
 namespace TSP_UniversalSingle
 {
@@ -73,11 +75,11 @@ namespace TSP_UniversalSingle
                     Console.WriteLine(i.ToString(format) + ". " + Files_sets[i]);
                 }
                 Console.WriteLine("\n");
-                var baseLine = Console.GetCursorPosition();
+                var (Left, Top) = Console.GetCursorPosition();
                 int selection = -1;
                 while(selection < 0 || selection >= L)
                 {
-                    Console.SetCursorPosition(baseLine.Left,baseLine.Top);
+                    Console.SetCursorPosition(Left,Top);
                     Console.WriteLine("Please pick a set:");
                     string eraser = new(' ', Console.BufferWidth);
                     Console.WriteLine(eraser);
@@ -90,26 +92,22 @@ namespace TSP_UniversalSingle
                 }
                 setName = Files_sets[selection];
             }
-
-            
             Console.Clear();
             // Loading set
-            Console.WriteLine("Loading set: " + setName);
+            ToLog("Starting loading set: " + setName);
             string setPath = Path.Combine(Folder_sets, setName);
             BestFound = TSPRoute.FromFile(setPath);
             // Calculating Lower Bound for this set
-            OneTree MST = new(BestFound);
-            MST.Generate();
-            LowerBound = MST.Cost;
-            Console.WriteLine("Finished loading set\n");
+            CalculateLowerBound();
+            ToLog("Finished loading set: " + setName + "\n");
             // Priting set info
-            Console.WriteLine("Name:        " + setName);
-            Console.WriteLine("Length:      " + BestFound.Length.ToString());
-            Console.WriteLine("Lower Bound: " + LowerBound.ToString("n"));
+            ToLog("Name:        " + setName);
+            ToLog("Length:      " + BestFound.Length.ToString());
+            ToLog("Lower Bound: " + LowerBound.ToString("n"));
             // Running sequence
-            RunNearestNeighbor();
-            RunTwoOpt();
-            RunSwap();
+            RunUniversal(new NearestNeighbor(BestFound));
+            RunUniversal(new TwoOpt(BestFound));
+            RunUniversal(new Swap(BestFound));
 
             // Creating output folder
             string Path_OutputFolder;
@@ -137,10 +135,24 @@ namespace TSP_UniversalSingle
             
 
         }
-        static void RunNearestNeighbor()
+        static int MaxAlgNameLength;
+        static string GetBanner(TSPAlgorithm algorithm)
         {
-            NearestNeighbor algorithm = new(BestFound);
-            Console.WriteLine("\n----------- NEAREST NEIGHBOR -----------");
+            if(MaxAlgNameLength < 1)
+            {
+                foreach(string algName in Enum.GetNames(typeof(AlgorithmType))) { MaxAlgNameLength = Math.Max(algName.Length, MaxAlgNameLength); }
+            }
+
+            int AlgNameLength = Enum.GetName(algorithm.AlgorithmType).Length;
+            double DashLength = Convert.ToDouble(12 + MaxAlgNameLength - AlgNameLength) / 2.0;
+            int LeftDashes = Convert.ToInt32(Math.Floor(DashLength));
+            int RightDashes = Convert.ToInt32(Math.Ceiling(DashLength));
+            return (new string('-', LeftDashes)) + ' ' + Enum.GetName(algorithm.AlgorithmType) + ' ' + (new string('-', RightDashes));
+        }
+        static void RunUniversal(TSPAlgorithm algorithm)
+        {
+
+            Console.WriteLine("\n" + GetBanner(algorithm));
             decimal cost_pre = Convert.ToDecimal(BestFound.Cost);
             DateTime startTime = DateTime.Now;
             Console.WriteLine("TimeStamp:     " + startTime.ToString());
@@ -148,76 +160,28 @@ namespace TSP_UniversalSingle
             Console.WriteLine("Current Score: " + CurrentScore.ToString("n"));
             algorithm.Run();
             DateTime endTime = DateTime.Now;
+            if (!algorithm.Route.ValidateTSPSet(BestFound, out string errorReason)) { throw new Exception("ALGORITHM WAS NOT VALID. Reason: " + errorReason); }
             if (algorithm.Route.Cost < BestFound.Cost)
             {
                 BestFound = new(algorithm.Route);
             }
             TimeSpan runTime = endTime - startTime;
             decimal cost_post = Convert.ToDecimal(BestFound.Cost);
-            decimal costDiff = (decimal)1 - (cost_post / cost_pre);
+            decimal costDiff = (decimal)1.0 - (cost_post / cost_pre);
             Console.WriteLine("--- RESULTS ---");
             Console.WriteLine("TimeStamp:     " + endTime.ToString());
             Console.WriteLine("Current Cost:  " + BestFound.Cost.ToString("n"));
             Console.WriteLine("Improvement:   " + costDiff.ToString("P"));
             Console.WriteLine("Run Time:      " + runTime);
             Console.WriteLine("Current Score: " + CurrentScore.ToString("n"));
-            Console.WriteLine("----------- NEAREST NEIGHBOR -----------\n");
+            Console.WriteLine(GetBanner(algorithm) + "\n");
         }
-        static void RunTwoOpt()
+        static void CalculateLowerBound()
         {
-            TwoOpt algorithm = new(BestFound);
-            Console.WriteLine("\n----------- TWO-OPT -------------------");
-            decimal cost_pre = Convert.ToDecimal(BestFound.Cost);
-            DateTime startTime = DateTime.Now;
-            Console.WriteLine("TimeStamp:     " + startTime.ToString());
-            Console.WriteLine("Current Cost:  " + BestFound.Cost.ToString("n"));
-            Console.WriteLine("Current Score: " + CurrentScore.ToString("n"));
-            algorithm.Run();
-            DateTime endTime = DateTime.Now;
-            if (algorithm.Route.Cost < BestFound.Cost)
-            {
-                BestFound = new(algorithm.Route);
-            }
-            TimeSpan runTime = endTime - startTime;
-            decimal cost_post = Convert.ToDecimal(BestFound.Cost);
-            decimal costDiff = (decimal)1 - (cost_post / cost_pre);
-            Console.WriteLine("--- RESULTS ---");
-            Console.WriteLine("TimeStamp:     " + endTime.ToString());
-            Console.WriteLine("Current Cost:  " + BestFound.Cost.ToString("n"));
-            Console.WriteLine("Improvement:   " + costDiff.ToString("P"));
-            Console.WriteLine("Run Time:      " + runTime);
-            Console.WriteLine("Current Score: " + CurrentScore.ToString("n"));
-            Console.WriteLine("----------- TWO-OPT -------------------\n");
+            // Calculating Lower Bound for this set
+            OneTree MST = new(BestFound);
+            MST.Generate();
+            LowerBound = MST.Cost;
         }
-
-        static void RunSwap()
-        {
-            Swap algorithm = new(BestFound);
-            Console.WriteLine("\n----------- SWAP ----------------------");
-            decimal cost_pre = Convert.ToDecimal(BestFound.Cost);
-            DateTime startTime = DateTime.Now;
-            Console.WriteLine("TimeStamp:     " + startTime.ToString());
-            Console.WriteLine("Current Cost:  " + BestFound.Cost.ToString("n"));
-            Console.WriteLine("Current Score: " + CurrentScore.ToString("n"));
-            algorithm.Run();
-            DateTime endTime = DateTime.Now;
-            if (algorithm.Route.Cost < BestFound.Cost)
-            {
-                BestFound = new(algorithm.Route);
-            }
-            TimeSpan runTime = endTime - startTime;
-            decimal cost_post = Convert.ToDecimal(BestFound.Cost);
-            decimal costDiff = (decimal)1 - (cost_post / cost_pre);
-            Console.WriteLine("--- RESULTS ---");
-            Console.WriteLine("TimeStamp:     " + endTime.ToString());
-            Console.WriteLine("Current Cost:  " + BestFound.Cost.ToString("n"));
-            Console.WriteLine("Improvement:   " + costDiff.ToString("P"));
-            Console.WriteLine("Run Time:      " + runTime);
-            Console.WriteLine("Current Score: " + CurrentScore.ToString("n"));
-            Console.WriteLine("----------- SWAP ----------------------\n");
-        }
-
-
-
     }
 }

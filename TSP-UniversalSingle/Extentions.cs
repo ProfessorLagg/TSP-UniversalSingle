@@ -2,7 +2,7 @@
 
 namespace TSPStandard
 {
-    public static class ImagingExtentions
+    public static class TSPExtentions
     {
         // Numbers
         // To map a value x from range: [a..b] to range [a'..b']
@@ -15,7 +15,6 @@ namespace TSPStandard
         {
             return (value - fromSource) / (toSource - fromSource) * (toTarget - fromTarget) + fromTarget;
         }
-
         public static float Map(this float value, float rangeFromStart, float rangeFromEnd, float rangeToStart, float rangeToEnd)
         {
             float xn = ((value - rangeFromStart) / (rangeFromEnd - rangeFromStart)) * (rangeToEnd - rangeToStart) + rangeToStart;
@@ -26,7 +25,6 @@ namespace TSPStandard
         {
             return value / Math.Abs(value);
         }
-
         // Collections
         public static int[] CircularNormalize(this IEnumerable<int> integers)
         {
@@ -61,7 +59,6 @@ namespace TSPStandard
             }
             return output;
         }
-
         // Cost
         public static float Cost(this IEnumerable<Vector2> tour)
         {
@@ -153,18 +150,39 @@ namespace TSPStandard
         // same set
         public static bool ValidateTSPSet(this IEnumerable<Vector2> set, IEnumerable<Vector2> correctSet)
         {
-            bool result = set.Count() == correctSet.Count(); // Checking size
-            if (!result)
+            string outNull = "";
+            return ValidateTSPSet(set, correctSet, out outNull);
+        }
+        public static bool ValidateTSPSet(this IEnumerable<Vector2> set, IEnumerable<Vector2> correctSet, out string reason)
+        {
+            bool sameCount = set.Count() == correctSet.Count();
+            bool samePoints = true;
+            foreach (var v in set)
             {
-                List<Vector2> setList = set.Distinct().ToList(); // removing duplicates
-                result = result && setList.Count() == set.Count(); // checking if duplicates where found
-
-                if (!result)
-                {
-                    setList.ForEach(x => result = result && correctSet.Contains(x)); // checking that all the points are the same across both collections
-                }
+                int setCount = set.Where(x => x == v).Count();
+                int correctSetCount = correctSet.Where(x => x == v).Count();
+                bool contained = setCount == correctSetCount;
+                samePoints = samePoints && contained;
             }
-            return result;
+            // Building reasons string
+            reason = "SET WAS VALID";
+            List<string> reasons = new();
+            if (!sameCount)
+            {
+                if (set.Count() < correctSet.Count()) { reasons.Add("set had too few points"); }
+                else { reasons.Add("set had too many points"); }
+            }
+            if (!samePoints) { reasons.Add("set didnt contain the same points as valid set"); }
+            if (reasons.Count > 0)
+            {
+                reason = reasons[0];
+                for (int i = 1; i < reasons.Count; i++)
+                {
+                    reason += ", " + reasons[i];
+                }
+
+            }
+            return sameCount && samePoints;
         }
     }
 }

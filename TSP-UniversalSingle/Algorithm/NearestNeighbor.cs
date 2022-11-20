@@ -17,39 +17,69 @@ namespace TSPStandard.Algorithm
 
         public override void Run()
         {
-            Vector2[] bestTour = this.Route.ToArray();
+            Vector2[] bestFoundArr = this.Route.ToArray();
+            float bestFoundCost = bestFoundArr.Cost();
+            int bestStartIndex = 0;
             Parallel.For(0, this.Route.Length, startIndex =>
             {
-                List<Vector2> noVisit = new(this.Route);
-                Vector2[] tour = this.Route.ToArray();
-                Span<Vector2> tourSpan = new(tour);
-                tourSpan[0] = this.Route[startIndex];
-                // building tour
-                for (int i = 1; i < this.Route.Length; i++)
+                // Setting up for making this route
+                List<Vector2> noVisit = new(bestFoundArr);
+                Vector2 CurrentVector = noVisit[startIndex];
+                float tourCost = 0;
+                noVisit.RemoveAt(startIndex);
+                // Calculating cost of building this tour
+                while (noVisit.Count > 0)
                 {
-                    Vector2 currentVector = tourSpan[i - 1];
-                    Vector2 bestVector = Vector2.One;
-                    float bestDistance = float.PositiveInfinity;
-                    foreach (Vector2 item in CollectionsMarshal.AsSpan(noVisit))
+                    Vector2 NextVector = CurrentVector;
+                    float bestCost = float.PositiveInfinity;
+                    foreach (Vector2 vec in CollectionsMarshal.AsSpan(noVisit))
                     {
-                        if (Vector2.DistanceSquared(item, currentVector) < bestDistance)
+                        if (Vector2.Distance(vec, CurrentVector) < bestCost)
                         {
-                            bestDistance = Vector2.DistanceSquared(item, currentVector);
-                            bestVector = item;
+                            bestCost = Vector2.Distance(CurrentVector, vec);
+                            NextVector = vec;
                         }
                     }
-                    tour[i] = bestVector;
-                    noVisit.Remove(bestVector);
+                    tourCost += Vector2.Distance(CurrentVector,NextVector);
+                    noVisit.Remove(NextVector);
+                    CurrentVector = NextVector;
                 }
-                lock (bestTour)
+                tourCost += Vector2.Distance(bestFoundArr[startIndex],CurrentVector);
+                if (tourCost < bestFoundCost)
                 {
-                    if (tour.Cost() < bestTour.Cost())
-                    {
-                        bestTour = tour.ToArray();
-                    }
+                    bestFoundCost = tourCost;
+                    bestStartIndex = startIndex;
                 }
             });
-            TSPRoute bestFound = new(this.Route.RouteName, bestTour);
+
+            // Building new bestFoundArr
+            List<Vector2> noVisit = new(bestFoundArr);
+            Vector2[] tour = new Vector2[noVisit.Count];
+            Span<Vector2> tourSpan = new(tour);
+            tourSpan[0] = noVisit[bestStartIndex];
+            noVisit.Remove(tourSpan[0]);
+            // building this route
+            for (int i = 1; i < tourSpan.Length; i++)
+            {
+                Vector2 currentVec = tour[i - 1];
+                float bestDist = float.MaxValue;
+                Vector2 bestVector = Vector2.One;
+                // finding closest vector
+                foreach (Vector2 nextVec in noVisit)
+                {
+                    if (Vector2.Distance(nextVec, currentVec) < bestDist)
+                    {
+                        bestDist = Vector2.Distance(nextVec, currentVec);
+                        bestVector = new(nextVec.X, nextVec.Y);
+                    }
+                }
+                // adding closest vector
+                tourSpan[i] = bestVector;
+                noVisit.Remove(bestVector);
+            }
+
+            // Checking if i found a better route
+            TSPRoute bestFound = new(this.Route.RouteName, tour);
             if (bestFound.Cost < this.Route.Cost)
             {
                 this.Route = new(bestFound);

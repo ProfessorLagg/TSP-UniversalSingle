@@ -24,10 +24,10 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 	 <Optimize>true</Optimize>
-	 <DebugType>pdbonly</DebugType>
+	  <DebugType>none</DebugType>
   </PropertyGroup>
 	<ItemGroup>
-		<Content Include="Assets\**" LinkBase="Assets\" CopyToOutputDirectory="PreserveNewest"></Content>
+		<Content Include="Assets\**" LinkBase="Assets\" CopyToOutputDirectory="Always"></Content>
 	</ItemGroup>
 
 </Project>
