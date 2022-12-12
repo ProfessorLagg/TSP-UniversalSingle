@@ -1,8 +1,7 @@
 {
   "profiles": {
     "TSP-UniversalSingle": {
-      "commandName": "Project",
-      "commandLineArgs": "lagg50.tsp"
+      "commandName": "Project"
     }
   }
 }

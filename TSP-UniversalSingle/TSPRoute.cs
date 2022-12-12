@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Concurrent;
 using System.Numerics;
+using System.Xml.Linq;
+using System.Xml.XPath;
 
 namespace TSPStandard
 {
@@ -17,17 +19,17 @@ namespace TSPStandard
         }
         public TSPRoute(string routeName, IEnumerable<Vector2> vectors)
         {
-            this.Vectors = new(vectors);
+            this.Vectors = new(vectors.ToArray());
             this.RouteName = routeName;
         }
         public TSPRoute(TSPRoute route)
         {
-            this.Vectors = new(route);
+            this.Vectors = new(route.ToArray());
             this.RouteName = route.RouteName;
         }
         // Instance Data
         public string RouteName;
-        private List<Vector2> Vectors; 
+        private List<Vector2> Vectors;
         public int Length
         {
             get
@@ -48,7 +50,7 @@ namespace TSPStandard
         {
             get
             {
-                if(TourHash != lastHash)
+                if (TourHash != lastHash)
                 {
                     return GetCost();
                 }
@@ -56,7 +58,7 @@ namespace TSPStandard
                 {
                     return _Cost;
                 }
-                
+
             }
         }
         private float _CostSquared;
@@ -66,7 +68,7 @@ namespace TSPStandard
             {
                 if (TourHash != lastHash)
                 {
-                    return GetCost();
+                    return GetCostSquared();
                 }
                 else
                 {
@@ -122,21 +124,19 @@ namespace TSPStandard
             lastHash = TourHash;
             return _CostSquared;
         }
-        public static TSPRoute FromFile(string path)
+        public static TSPRoute FromTSPFile(string path)
         {
             char delim = Convert.ToChar(System.Globalization.CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator);
             List<string> lines = File.ReadAllLines(path).ToList();
- 
-            string name = lines.Find(x => x.Contains("NAME :")).Replace("NAME :","").Trim();
+
+            string name = lines.Find(x => x.Contains("NAME :")).Replace("NAME :", "").Trim();
             TSPRoute output = new(name);
             int currentIndex = lines.FindIndex(x => x.Contains("NODE_COORD_SECTION")) + 1;
             string currentLine = lines[currentIndex];
             do
             {
-
-                
                 string[] split = currentLine.Split(" ");
-                string xString = split[split.Length - 2].Replace('.',delim);
+                string xString = split[split.Length - 2].Replace('.', delim);
                 string yString = split[split.Length - 1].Replace('.', delim);
                 output.Add(new Vector2(float.Parse(xString), float.Parse(yString)));
                 currentIndex++;
@@ -144,33 +144,61 @@ namespace TSPStandard
             } while (!currentLine.Contains("EOF"));
             return output;
         }
-        public void SaveAsTSPFile(string savePath)
+        public void SaveAsXMLFile(string path)
         {
-            string template_NAME = "NAME : <value>";
-            //string template_COMMENT = "COMMENT : <value>";
-            string template_DIMENSION = "DIMENSION : <value>";
-
-            List<string> lines = new();
-            lines.Add(template_NAME.Replace("<value>",this.RouteName));
-            lines.Add(template_DIMENSION.Replace("<value>", this.Length.ToString("0")));
-            lines.Add("EDGE_WEIGHT_TYPE : EUC_2D");
-            lines.Add("NODE_COORD_SECTION");
-            for(int i = 0; i < this.Length; i++)
+            OneTree MST = new(this);
+            MST.Generate();
+            SaveAsXMLFile(path, MST.Cost);
+        }
+        public void SaveAsXMLFile(string path, float lowerBound)
+        {
+            XDocument xml = new(new XElement("TSPSet"));
+            xml.Root.Add(new XElement("name", this.RouteName));
+            xml.Root.Add(new XElement("dimension", this.Length.ToString()));
+            xml.Root.Add(new XElement("lowerBound", lowerBound));
+            xml.Root.Add(new XElement("permutationCost", this.Cost));
+            XElement pointsElement = new("points");
+            for (int i = 0; i < this.Length; i++)
             {
-                string line = (i + 1).ToString("0") + " ";
-                Vector2 point = this.Vectors[i];
-                line += point.X.ToString("0.0000").Replace(',','.') + " ";
-                line += point.Y.ToString("0.0000").Replace(',','.') + " ";
-                lines.Add(line);
+                Vector2 vec = Vectors[i];
+                pointsElement.Add(new XElement("point",
+                    new XAttribute("index", (i + 1).ToString()),
+                    new XAttribute("x", vec.X),
+                    new XAttribute("y", vec.Y)
+                    ));
             }
-            lines.Add("EOF");
-            File.WriteAllLines(savePath,lines);
+            xml.Root.Add(pointsElement);
 
+            xml.Save(path);
+        }
+        public static TSPRoute FromXMLFile(string path)
+        {
+            float trashcan = 0;
+            return FromXMLFile(path, out trashcan);
+        }
+        public static TSPRoute FromXMLFile(string path, out float lowerBound)
+        {
+            char delim = Convert.ToChar(System.Globalization.CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator);
+            XDocument xml = XDocument.Load(path);
+            var root = xml.Root;
+
+            string RouteName = root.XPathSelectElement("//name").Value;
+            string lowBoundString = root.XPathSelectElement("//lowerBound").Value;
+            lowerBound = float.Parse(lowBoundString.Replace('.', delim));
+            List<Vector2> Points = new();
+            var pointElements = root.XPathSelectElements("//points/point");
+            foreach (var pointElement in pointElements)
+            {
+                float x = float.Parse(pointElement.Attribute("x").Value.Replace('.', delim));
+                float y = float.Parse(pointElement.Attribute("y").Value.Replace('.', delim));
+                Points.Add(new Vector2(x, y));
+            }
+            return new TSPRoute(RouteName, Points);
         }
         // Overrides, indexers and operators
         public Vector2 this[int i]
         {
-            
+
             get { return Vectors[i % Length]; }
             set { Vectors[i % Length] = value; }
         }

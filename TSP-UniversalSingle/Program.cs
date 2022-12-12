@@ -6,6 +6,7 @@ using System.Reflection;
 using TSPStandard.Algorithm;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using System.Text.RegularExpressions;
 
 namespace TSP_UniversalSingle
 {
@@ -33,14 +34,17 @@ namespace TSP_UniversalSingle
             // Parsing folders and loading set file names
             string Folder_Assets;
             string Folder_sets;
+            string Folder_setsXML;
             List<string> Files_sets;
-            string[] fullNames;
+            List<string> fullNames = new();
             try
             {
                 Folder_Assets = Path.Combine(EXERoot, "Assets");
                 Folder_sets = Path.Combine(Folder_Assets, "sets");
+                Folder_setsXML = Path.Combine(Folder_Assets, "setsXML");
                 Files_sets = new();
-                fullNames = Directory.GetFiles(Folder_sets, "*.tsp");
+                fullNames.AddRange(Directory.GetFiles(Folder_sets, "*.tsp"));
+                fullNames.AddRange(Directory.GetFiles(Folder_setsXML, "*.xml"));
                 foreach (string file in fullNames)
                 {
                     var info = new FileInfo(file);
@@ -51,8 +55,10 @@ namespace TSP_UniversalSingle
             {
                 Folder_Assets = @".\Assets";
                 Folder_sets = Path.Combine(Folder_Assets, "sets");
+                Folder_setsXML = Path.Combine(Folder_Assets, "setsXML");
                 Files_sets = new();
-                fullNames = Directory.GetFiles(Folder_sets, "*.tsp");
+                fullNames.AddRange(Directory.GetFiles(Folder_sets, "*.tsp"));
+                fullNames.AddRange(Directory.GetFiles(Folder_setsXML, "*.xml"));
                 foreach (string file in fullNames)
                 {
                     var info = new FileInfo(file);
@@ -65,14 +71,25 @@ namespace TSP_UniversalSingle
             if (args.Length > 0 && Files_sets.Contains(args[0])) { setName = args[0]; PauseWhenFinished = false; } // Use the specified set
             else
             {
-                // Ask user about which set to use
-                int L = Files_sets.Count;
+                
+                List<string> distincFileSets = Files_sets.Where(fileSet => fileSet.Contains(".xml")).ToList();
+                var tspFileSets = Files_sets.Where(fileSet => fileSet.Contains(".tsp"));
+                foreach (var tspFileSet in tspFileSets)
+                {
+                    if (!distincFileSets.Contains(tspFileSet.Replace(".tsp", ".xml")))
+                    {
+                        distincFileSets.Add(tspFileSet);
+                    }
+                }
+                Regex rgx = new(@"[^0-9]");
+                distincFileSets = distincFileSets.OrderBy(nameStr => int.Parse(rgx.Replace(nameStr, ""))).ToList();
+                int L = distincFileSets.Count;
                 int log10L = (int)Math.Log10(L);
                 string format = new string('0', log10L) + '0';
 
                 for (int i = 0; i < L; i++)
                 {
-                    Console.WriteLine(i.ToString(format) + ". " + Files_sets[i]);
+                    Console.WriteLine(i.ToString(format) + ". " + distincFileSets[i]);
                 }
                 Console.WriteLine("\n");
                 var (Left, Top) = Console.GetCursorPosition();
@@ -84,21 +101,30 @@ namespace TSP_UniversalSingle
                     string eraser = new(' ', Console.BufferWidth);
                     Console.WriteLine(eraser);
                     Console.SetCursorPosition(0, Console.GetCursorPosition().Top - 1);
+                    // Ask user about which set to use
                     string? input = Console.ReadLine();
                     if(!int.TryParse(input, out selection))
                     {
                         selection = -1;
                     }
                 }
-                setName = Files_sets[selection];
+                setName = distincFileSets[selection];
             }
             Console.Clear();
             // Loading set
             ToLog("Starting loading set: " + setName);
-            string setPath = Path.Combine(Folder_sets, setName);
-            BestFound = TSPRoute.FromFile(setPath);
-            // Calculating Lower Bound for this set
-            CalculateLowerBound();
+            if (setName.Contains(".tsp"))
+            {
+                string setPath = Path.Combine(Folder_sets, setName);
+                BestFound = TSPRoute.FromTSPFile(setPath);
+                CalculateLowerBound(); // Since TSP file format doesnt include pre-computed lowerBound, i have to calc it
+            }
+            else if (setName.Contains(".xml"))
+            {
+                string setPath = Path.Combine(Folder_setsXML, setName);
+                BestFound = TSPRoute.FromXMLFile(setPath,out LowerBound);
+            }
+
             ToLog("Finished loading set: " + setName + "\n");
             // Priting set info
             ToLog("Name:        " + setName);
@@ -125,7 +151,7 @@ namespace TSP_UniversalSingle
             }
             if (!Directory.Exists(Path_OutputFolder)) { Directory.CreateDirectory(Path_OutputFolder); }
             //SAVE FILE
-            BestFound.SaveAsTSPFile(Path_OutputFile);
+            BestFound.SaveAsXMLFile(Path_OutputFile,LowerBound);
             Console.WriteLine("Saved output to: " + Path_OutputFile);
             if (PauseWhenFinished)
             {
