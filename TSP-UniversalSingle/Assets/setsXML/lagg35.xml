@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TSPSet>
+  <name>lagg35</name>
+  <dimension>35</dimension>
+  <lowerBound>545.296</lowerBound>
+  <permutationCost>1762.1619</permutationCost>
+  <points>
+    <point index="1" x="12.856208" y="25.675152" />
+    <point index="2" x="60.73832" y="89.81561" />
+    <point index="3" x="1.6007583" y="92.58328" />
+    <point index="4" x="57.65938" y="14.812387" />
+    <point index="5" x="16.172134" y="33.910007" />
+    <point index="6" x="58.462063" y="83.22896" />
+    <point index="7" x="17.763361" y="84.73246" />
+    <point index="8" x="55.21544" y="87.50402" />
+    <point index="9" x="2.009807" y="68.68003" />
+    <point index="10" x="41.036907" y="58.99056" />
+    <point index="11" x="51.134212" y="85.81049" />
+    <point index="12" x="75.002235" y="85.2948" />
+    <point index="13" x="25.488264" y="71.0753" />
+    <point index="14" x="51.65806" y="1.8263524" />
+    <point index="15" x="89.20601" y="3.5456123" />
+    <point index="16" x="50.429882" y="57.03125" />
+    <point index="17" x="19.991856" y="35.724773" />
+    <point index="18" x="72.254295" y="51.57559" />
+    <point index="19" x="59.229855" y="54.303295" />
+    <point index="20" x="91.545425" y="52.508602" />
+    <point index="21" x="30.804409" y="91.68017" />
+    <point index="22" x="7.2645164" y="77.69381" />
+    <point index="23" x="41.123592" y="41.8684" />
+    <point index="24" x="68.66003" y="40.54984" />
+    <point index="25" x="85.22994" y="99.82127" />
+    <point index="26" x="18.894276" y="91.16347" />
+    <point index="27" x="30.929874" y="41.12755" />
+    <point index="28" x="53.615044" y="65.546074" />
+    <point index="29" x="53.81554" y="0.44273576" />
+    <point index="30" x="75.15755" y="27.959715" />
+    <point index="31" x="13.035081" y="21.715666" />
+    <point index="32" x="27.479235" y="55.998272" />
+    <point index="33" x="93.84018" y="26.55172" />
+    <point index="34" x="87.66094" y="72.27452" />
+    <point index="35" x="50.637432" y="88.91342" />
+  </points>
+</TSPSet>

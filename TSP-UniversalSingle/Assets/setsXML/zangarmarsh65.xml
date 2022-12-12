@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TSPSet>
+  <name>zangarmarsh65</name>
+  <dimension>65</dimension>
+  <lowerBound>333.72513</lowerBound>
+  <permutationCost>999.81396</permutationCost>
+  <points>
+    <point index="1" x="9.5" y="61.9" />
+    <point index="2" x="13.1" y="61.7" />
+    <point index="3" x="14.7" y="60.3" />
+    <point index="4" x="15.3" y="63.7" />
+    <point index="5" x="17.3" y="54.3" />
+    <point index="6" x="17.5" y="57.6" />
+    <point index="7" x="17.8" y="67.2" />
+    <point index="8" x="19" y="55.9" />
+    <point index="9" x="21.5" y="53.2" />
+    <point index="10" x="25.3" y="49.2" />
+    <point index="11" x="26.1" y="46.9" />
+    <point index="12" x="30.7" y="29.5" />
+    <point index="13" x="31.1" y="42.7" />
+    <point index="14" x="33" y="36.8" />
+    <point index="15" x="34.1" y="40.8" />
+    <point index="16" x="34.6" y="48.3" />
+    <point index="17" x="35.7" y="65.9" />
+    <point index="18" x="36.8" y="56.4" />
+    <point index="19" x="36.9" y="59.6" />
+    <point index="20" x="37.6" y="48.2" />
+    <point index="21" x="38.7" y="47.4" />
+    <point index="22" x="39.3" y="30.3" />
+    <point index="23" x="43.6" y="60.4" />
+    <point index="24" x="43.6" y="60.5" />
+    <point index="25" x="48.5" y="62.1" />
+    <point index="26" x="54.8" y="34.3" />
+    <point index="27" x="61.3" y="36.5" />
+    <point index="28" x="62.7" y="42.1" />
+    <point index="29" x="64" y="38.3" />
+    <point index="30" x="64.9" y="60.8" />
+    <point index="31" x="65.1" y="65.2" />
+    <point index="32" x="67.2" y="60.3" />
+    <point index="33" x="67.7" y="86.3" />
+    <point index="34" x="68.8" y="39.4" />
+    <point index="35" x="69.2" y="66.5" />
+    <point index="36" x="70" y="75.9" />
+    <point index="37" x="70.7" y="72.3" />
+    <point index="38" x="72.1" y="42.4" />
+    <point index="39" x="72.1" y="42.5" />
+    <point index="40" x="72.8" y="32.9" />
+    <point index="41" x="73" y="86.1" />
+    <point index="42" x="73.6" y="30.7" />
+    <point index="43" x="74.2" y="33.9" />
+    <point index="44" x="74.5" y="77.6" />
+    <point index="45" x="74.7" y="48" />
+    <point index="46" x="75.6" y="32.8" />
+    <point index="47" x="76.2" y="62.1" />
+    <point index="48" x="77" y="56.3" />
+    <point index="49" x="77.7" y="46.3" />
+    <point index="50" x="78.3" y="70.4" />
+    <point index="51" x="78.5" y="56" />
+    <point index="52" x="78.7" y="73.1" />
+    <point index="53" x="79.3" y="59" />
+    <point index="54" x="81.6" y="33.1" />
+    <point index="55" x="82" y="57.3" />
+    <point index="56" x="82.3" y="48.5" />
+    <point index="57" x="82.6" y="41.7" />
+    <point index="58" x="83" y="79.9" />
+    <point index="59" x="83.4" y="88.3" />
+    <point index="60" x="83.5" y="88.4" />
+    <point index="61" x="84.5" y="87.2" />
+    <point index="62" x="85.9" y="85.8" />
+    <point index="63" x="86" y="80.2" />
+    <point index="64" x="86.2" y="33.8" />
+    <point index="65" x="86.9" y="30.8" />
+  </points>
+</TSPSet>

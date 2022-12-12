@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TSPSet>
+  <name>dj38</name>
+  <dimension>38</dimension>
+  <lowerBound>6543.6245</lowerBound>
+  <permutationCost>17099.02</permutationCost>
+  <points>
+    <point index="1" x="11003.611" y="42102.5" />
+    <point index="2" x="11108.611" y="42373.89" />
+    <point index="3" x="11133.333" y="42885.832" />
+    <point index="4" x="11155.833" y="42712.5" />
+    <point index="5" x="11183.333" y="42933.332" />
+    <point index="6" x="11297.5" y="42853.332" />
+    <point index="7" x="11310.277" y="42929.445" />
+    <point index="8" x="11416.667" y="42983.332" />
+    <point index="9" x="11423.889" y="43000.277" />
+    <point index="10" x="11438.333" y="42057.223" />
+    <point index="11" x="11461.111" y="43252.777" />
+    <point index="12" x="11485.556" y="43187.223" />
+    <point index="13" x="11503.056" y="42855.277" />
+    <point index="14" x="11511.389" y="42106.39" />
+    <point index="15" x="11522.223" y="42841.945" />
+    <point index="16" x="11569.444" y="43136.668" />
+    <point index="17" x="11583.333" y="43150" />
+    <point index="18" x="11595" y="43148.055" />
+    <point index="19" x="11600" y="43150" />
+    <point index="20" x="11690.556" y="42686.668" />
+    <point index="21" x="11715.833" y="41836.11" />
+    <point index="22" x="11751.111" y="42814.445" />
+    <point index="23" x="11770.277" y="42651.945" />
+    <point index="24" x="11785.277" y="42884.445" />
+    <point index="25" x="11822.777" y="42673.61" />
+    <point index="26" x="11846.944" y="42660.555" />
+    <point index="27" x="11963.056" y="43290.555" />
+    <point index="28" x="11973.056" y="43026.11" />
+    <point index="29" x="12058.333" y="42195.555" />
+    <point index="30" x="12149.444" y="42477.5" />
+    <point index="31" x="12286.944" y="43355.555" />
+    <point index="32" x="12300" y="42433.332" />
+    <point index="33" x="12355.833" y="43156.39" />
+    <point index="34" x="12363.333" y="43189.168" />
+    <point index="35" x="12372.777" y="42711.39" />
+    <point index="36" x="12386.667" y="43334.723" />
+    <point index="37" x="12421.667" y="42895.555" />
+    <point index="38" x="12645" y="42973.332" />
+  </points>
+</TSPSet>

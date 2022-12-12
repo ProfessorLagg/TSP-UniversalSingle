@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TSPSet>
+  <name>lagg50</name>
+  <dimension>50</dimension>
+  <lowerBound>57531.527</lowerBound>
+  <permutationCost>282073.4</permutationCost>
+  <points>
+    <point index="1" x="6035.296" y="8959.153" />
+    <point index="2" x="170.9637" y="4790.0737" />
+    <point index="3" x="3314.5012" y="2428.411" />
+    <point index="4" x="1249.7032" y="9908.41" />
+    <point index="5" x="7104.6606" y="3599.1655" />
+    <point index="6" x="5213.7983" y="8118.5405" />
+    <point index="7" x="422.5059" y="9991.194" />
+    <point index="8" x="1292.0745" y="1708.6078" />
+    <point index="9" x="8432.922" y="6448.0327" />
+    <point index="10" x="2004.9559" y="1457.3099" />
+    <point index="11" x="537.9348" y="735.08154" />
+    <point index="12" x="6582.839" y="4611.663" />
+    <point index="13" x="2417.573" y="4047.7578" />
+    <point index="14" x="1022.5166" y="181.10829" />
+    <point index="15" x="3425.4626" y="4501.357" />
+    <point index="16" x="8946.674" y="5320.1953" />
+    <point index="17" x="818.8474" y="9136.726" />
+    <point index="18" x="3318.9983" y="8747.275" />
+    <point index="19" x="740.9126" y="8489.556" />
+    <point index="20" x="8068.2217" y="8911.521" />
+    <point index="21" x="4133.7085" y="5622.085" />
+    <point index="22" x="8869.679" y="1.8965331" />
+    <point index="23" x="5322.948" y="9442.004" />
+    <point index="24" x="2495.5305" y="8088.4487" />
+    <point index="25" x="8179.863" y="869.1774" />
+    <point index="26" x="4136.5283" y="2222.265" />
+    <point index="27" x="5882.6426" y="2051.7002" />
+    <point index="28" x="4379.3467" y="3326.8088" />
+    <point index="29" x="6071.41" y="4926.023" />
+    <point index="30" x="9804.16" y="6440.79" />
+    <point index="31" x="8293.778" y="559.69324" />
+    <point index="32" x="2931.2795" y="4110.2607" />
+    <point index="33" x="7252.779" y="6769.292" />
+    <point index="34" x="4727.7046" y="1385.0673" />
+    <point index="35" x="8728.935" y="4880.7876" />
+    <point index="36" x="1150.1064" y="4575.935" />
+    <point index="37" x="9958.045" y="8048.483" />
+    <point index="38" x="9558.814" y="7589.486" />
+    <point index="39" x="1267.3904" y="6270.2026" />
+    <point index="40" x="9302.919" y="7356.3135" />
+    <point index="41" x="1109.9276" y="1977.6381" />
+    <point index="42" x="4721.177" y="1688.3601" />
+    <point index="43" x="7275.6064" y="1677.2213" />
+    <point index="44" x="5508.8125" y="7662.9653" />
+    <point index="45" x="3991.4924" y="7522.6797" />
+    <point index="46" x="9904.568" y="6595.245" />
+    <point index="47" x="6368.7705" y="8883.966" />
+    <point index="48" x="8825.685" y="6933.782" />
+    <point index="49" x="1433.6996" y="77.62058" />
+    <point index="50" x="532.6544" y="735.24066" />
+  </points>
+</TSPSet>

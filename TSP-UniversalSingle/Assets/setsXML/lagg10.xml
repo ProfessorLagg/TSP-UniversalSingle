@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TSPSet>
+  <name>lagg10</name>
+  <dimension>10</dimension>
+  <lowerBound>25882.58</lowerBound>
+  <permutationCost>71089.98</permutationCost>
+  <points>
+    <point index="1" x="6035.296" y="8959.153" />
+    <point index="2" x="170.9637" y="4790.0737" />
+    <point index="3" x="3314.5012" y="2428.411" />
+    <point index="4" x="1249.7032" y="9908.41" />
+    <point index="5" x="7104.6606" y="3599.1655" />
+    <point index="6" x="5213.7983" y="8118.5405" />
+    <point index="7" x="422.5059" y="9991.194" />
+    <point index="8" x="1292.0745" y="1708.6078" />
+    <point index="9" x="8432.922" y="6448.0327" />
+    <point index="10" x="2004.9559" y="1457.3099" />
+  </points>
+</TSPSet>
