@@ -24,7 +24,8 @@ namespace TSPStandard.Algorithm
         LocalChunkOptimiser,
         BruteSeed,
         SliceWindowBruteForce,
-        BestEdge
+        BestEdge,
+        InsertionBuild
     }
     public class TSPAlgorithm
     {
