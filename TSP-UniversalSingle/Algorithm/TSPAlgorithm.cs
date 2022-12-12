@@ -4,12 +4,15 @@ namespace TSPStandard.Algorithm
 {
     public enum WorkingSeeds
     {
-        NearestNeighbor
+        NearestNeighbor,
+        InsertionBuild
     }
     public enum WorkingImprovers
     {
         TwoOpt,
-        Swap
+        Swap,
+        SliceWindowBruteForce,
+        SliceWindowBruteForceRecurse
     }
     public enum AlgorithmType
     {

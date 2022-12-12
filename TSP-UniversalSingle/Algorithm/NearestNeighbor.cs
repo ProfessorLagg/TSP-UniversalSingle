@@ -14,7 +14,6 @@ namespace TSPStandard.Algorithm
         {
             this.AlgorithmType = AlgorithmType.NearestNeighbor;
         }
-
         public override void Run()
         {
             Vector2[] bestFoundArr = this.Route.ToArray();

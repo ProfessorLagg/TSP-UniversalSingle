@@ -14,6 +14,11 @@ namespace TSPStandard.Algorithm
         {
             this.AlgorithmType = AlgorithmType.SliceWindowBruteForce;
         }
+        public SliceWindowBruteForce(TSPRoute route, bool recursive) : base(route)
+        {
+            this.AlgorithmType = AlgorithmType.SliceWindowBruteForce;
+            this.Recursive = recursive;
+        }
         private static PermutationGenerator permGen = new();
         public int PermLength = 8;
         public bool Recursive = false;

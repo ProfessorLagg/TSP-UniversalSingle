@@ -17,7 +17,15 @@ namespace TSP_UniversalSingle
             string writeMe = DateTime.Now.ToString("G") + "\t" + message;
             Console.WriteLine(writeMe);
         }
-        static readonly string? EXERoot = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        static string? EXERoot
+        {
+            get
+            {
+                if (Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location) is not null) { return Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location); }
+                else { return System.AppContext.BaseDirectory.ToString(); }
+            }
+        }
+
         private static TSPRoute? BestFound;
         private static float LowerBound;
         private static bool PauseWhenFinished = true;
@@ -32,6 +40,7 @@ namespace TSP_UniversalSingle
         static void Main(string[] args)
         {
             // Parsing folders and loading set file names
+            List<string> argsList = new(args);
             string Folder_Assets;
             string Folder_sets;
             string Folder_setsXML;
@@ -65,10 +74,10 @@ namespace TSP_UniversalSingle
                     Files_sets.Add(info.Name);
                 }
             }
-
             // Parsing set file name
             string setName;
-            if (args.Length > 0 && Files_sets.Contains(args[0])) { setName = args[0]; PauseWhenFinished = false; } // Use the specified set
+            string setParam = argsList.Find(arg => arg.Contains("-set:"));
+            if (!string.IsNullOrEmpty(setParam)) { setName = setParam.Replace("-set:", "").Trim(); PauseWhenFinished = false; } // Use the specified set
             else
             {
                 
@@ -124,20 +133,60 @@ namespace TSP_UniversalSingle
                 string setPath = Path.Combine(Folder_setsXML, setName);
                 BestFound = TSPRoute.FromXMLFile(setPath,out LowerBound);
             }
-
             ToLog("Finished loading set: " + setName + "\n");
             // Priting set info
             ToLog("Name:        " + setName);
             ToLog("Length:      " + BestFound.Length.ToString());
             ToLog("Lower Bound: " + LowerBound.ToString("n"));
+            // Parsing Level argument
+
             // Running sequence
-            RunUniversal(new NearestNeighbor(BestFound));
-            RunUniversal(new TwoOpt(BestFound));
-            RunUniversal(new Swap(BestFound));
+            string seqParam = argsList.Find(arg => arg.Contains("-seq:"));
+            if (string.IsNullOrEmpty(seqParam))
+            {
+                // Run default
+                RunUniversal(new InsertionBuild(BestFound));
+                RunUniversal(new SliceWindowBruteForce(BestFound));
+            }
+            else
+            {
+                // Parse sequence
+                string[] SequenceStrings = seqParam.Replace("-seq:", "").Trim().Split(',');
+                foreach(string seqString in SequenceStrings)
+                {
+                    string seqName = seqString.Trim().ToUpper();
+                    switch(seqName)
+                    {
+                        default: break;
+                        // Long name
+                        case "INSERTIONBUILD": RunUniversal(new InsertionBuild(BestFound)); break;
+                        case "NEARESTNEIGHBOR": RunUniversal(new InsertionBuild(BestFound)); break;
+                        case "TWOOPT": RunUniversal(new TwoOpt(BestFound)); break;
+                        case "SWAP": RunUniversal(new Swap(BestFound)); break;
+                        case "SLICEWINDOWBRUTEFORCE": RunUniversal(new SliceWindowBruteForce(BestFound,false)); break;
+                        case "SLICEWINDOWBRUTEFORCERECURSIVE": RunUniversal(new SliceWindowBruteForce(BestFound,true)); break;
+                        // Short name
+                        case "INB": goto case "INSERTIONBUILD";
+                        case "NN": goto case "NEARESTNEIGHBOR";
+                        case "2OP": goto case "TWOOPT";
+                        case "SWP": goto case "SWAP";
+                        case "SWB": goto case "SLICEWINDOWBRUTEFORCE";
+                        case "SWR": goto case "SLICEWINDOWBRUTEFORCERECURSIVE";
+                        //Aliases
+                        case "2OPT": goto case "TWOOPT";
+                        case "2-OPT": goto case "TWOOPT";
+                        case "SLICEWINDOW": goto case "SLICEWINDOWBRUTEFORCE";
+                        case "SLICEWINDOWRECURSE": goto case "SLICEWINDOWBRUTEFORCERECURSIVE";
+                    }
+                }
+
+
+            }
+            
 
             // Creating output folder
             string Path_OutputFolder;
-            string fileName = DateTime.Now.ToString(@"yyyyMMdd-HHmmss") + "_" + BestFound.RouteName + ".tsp";
+            string fileName = DateTime.Now.ToString(@"yyyyMMdd-HHmmss") + "_" + BestFound.RouteName + ".xml";
             string Path_OutputFile;
             try
             {
@@ -158,8 +207,6 @@ namespace TSP_UniversalSingle
                 Console.WriteLine("\n\n Press any key to exit...");
                 Console.ReadKey();
             }
-            
-
         }
         static int MaxAlgNameLength;
         static string GetBanner(TSPAlgorithm algorithm)

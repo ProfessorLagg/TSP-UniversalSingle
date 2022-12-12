@@ -4,7 +4,20 @@ namespace TSPStandard
 {
     public sealed class PermutationGenerator
     {
-        private static string ExePath = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+        private static string _ExePath;
+        private static string ExePath
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_ExePath))
+                {
+                    if(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location) is not null) { _ExePath = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location); }
+                    else if(System.AppContext.BaseDirectory is not null) { _ExePath = System.AppContext.BaseDirectory.ToString(); }
+                }
+                return _ExePath;
+            }
+        }
+        //System.AppContext.BaseDirectory
         private string PermFolderPath = Path.Combine(ExePath, "Assets", "permutations");
         private Dictionary<int, string> PermutationSetFilePaths;
         private static ConcurrentDictionary<int, List<int[]>> PermutationSetRamCache = new();
