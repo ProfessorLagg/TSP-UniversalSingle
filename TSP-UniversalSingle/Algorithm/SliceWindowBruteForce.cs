@@ -1,5 +1,4 @@
-﻿using Combinatorics.Collections;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -33,15 +32,15 @@ namespace TSPStandard.Algorithm
                 Vector2 postVector = localSpan[(i + 1 + PermLength) % L];
 
                 ReadOnlySpan<Vector2> originalSlice = new(localSpan.Slice(i, PermLength).ToArray());
-                float BestCost = originalSlice.TourLength() + preVector.Dist(originalSlice[0]) + originalSlice[originalSlice.Length - 1].Dist(postVector);
+                float BestCost = originalSlice.TourLength() + Vector2.Distance(preVector,originalSlice[0]) + Vector2.Distance(originalSlice[originalSlice.Length - 1],postVector);
                 foreach (int[] indexPerm in CollectionsMarshal.AsSpan(IndexPerms))
                 {
                     // calculating cost of slice if perm was applied
-                    float cost = postVector.Dist(originalSlice[indexPerm[indexPerm.Length - 1]]);
+                    float cost = Vector2.Distance(postVector,originalSlice[indexPerm[indexPerm.Length - 1]]);
                     Vector2 currVec = preVector;
                     for (int j = 0; j < indexPerm.Length; j++)
                     {
-                        cost += currVec.Dist(originalSlice[indexPerm[j]]);
+                        cost += Vector2.Distance(currVec,originalSlice[indexPerm[j]]);
                         currVec = originalSlice[indexPerm[j]];
                     }
                     // Applying perm if cost of slice was better

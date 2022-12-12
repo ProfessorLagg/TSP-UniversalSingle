@@ -62,62 +62,7 @@ namespace TSPStandard
         // Cost
         public static float Cost(this IEnumerable<Vector2> tour)
         {
-            Vector2[] tempRoute = tour.ToArray();
-            float output = 0;
-            int L = tempRoute.Length;
-            for (int i = 0; i < L; i++)
-            {
-                output += Vector2.Distance(tempRoute[i], tempRoute[(i + 1) % L]);
-            }
-            return output;
-        }
-        public static float CostSquared(this IEnumerable<Vector2> tour)
-        {
-            Vector2[] tempRoute = tour.ToArray();
-            float output = 0;
-            int L = tempRoute.Length;
-            for (int i = 0; i < L; i++)
-            {
-                output += Vector2.DistanceSquared(tempRoute[i], tempRoute[(i + 1) % L]);
-            }
-            return output;
-        }
-        /// <summary>
-        /// Cost that doesnt loop
-        /// </summary>
-        /// <param name="tour"></param>
-        /// <returns></returns>
-        public static float TourLength(this IEnumerable<Vector2> tour)
-        {
-            Vector2[] tempRoute = tour.ToArray();
-            float output = 0;
-            int L = tempRoute.Length - 1;
-            for (int i = 0; i < L; i++)
-            {
-                output += Vector2.Distance(tempRoute[i], tempRoute[(i + 1) % L]);
-            }
-            return output;
-        }
-        /// <summary>
-        /// CostSquared that doesnt loop
-        /// </summary>
-        /// <param name="tour"></param>
-        /// <returns></returns>
-        public static float TourLengthSquared(this IEnumerable<Vector2> tour)
-        {
-            Vector2[] tempRoute = tour.ToArray();
-            float output = 0;
-            int L = tempRoute.Length - 1;
-            for (int i = 0; i < L; i++)
-            {
-                output += Vector2.DistanceSquared(tempRoute[i], tempRoute[(i + 1) % L]);
-            }
-            return output;
-        }
-        public static float Cost(this Vector2[] tour)
-        {
-            ReadOnlySpan<Vector2> span = new(tour);
-            return span.Cost();
+            return new ReadOnlySpan<Vector2>(tour.ToArray()).Cost();
         }
         public static float Cost(this Span<Vector2> tour)
         {
@@ -147,42 +92,108 @@ namespace TSPStandard
             }
             return output;
         }
+        public static float CostSquared(this IEnumerable<Vector2> tour)
+        {
+            return new ReadOnlySpan<Vector2>(tour.ToArray()).CostSquared();
+        }
+        public static float CostSquared(this Span<Vector2> tour)
+        {
+            float output = 0;
+            for (int i = 0; i < tour.Length; i++)
+            {
+                output += Vector2.DistanceSquared(tour[i], tour[(i + 1) % tour.Length]);
+            }
+            return output;
+        }
+        public static float CostSquared(this Memory<Vector2> tour)
+        {
+            Span<Vector2> temp = tour.ToArray();
+            float output = 0;
+            for (int i = 0; i < tour.Length; i++)
+            {
+                output += Vector2.DistanceSquared(temp[i], temp[(i + 1) % temp.Length]);
+            }
+            return output;
+        }
+        public static float CostSquared(this ReadOnlySpan<Vector2> tour)
+        {
+            float output = 0;
+            for (int i = 0; i < tour.Length; i++)
+            {
+                output += Vector2.DistanceSquared(tour[i], tour[(i + 1) % tour.Length]);
+            }
+            return output;
+        }
+        public static float TourLength(this IEnumerable<Vector2> tour)
+        {
+            return new ReadOnlySpan<Vector2>(tour.ToArray()).TourLength();
+        }
+        public static float TourLength(this Span<Vector2> tour)
+        {
+            return new ReadOnlySpan<Vector2>(tour.ToArray()).TourLength();
+        }
+        public static float TourLength(this Memory<Vector2> tour)
+        {
+            return new ReadOnlySpan<Vector2>(tour.ToArray()).TourLength();
+        }
+        public static float TourLength(this ReadOnlySpan<Vector2> tour)
+        {
+            float output = 0;
+            for (int i = 0; i < tour.Length; i++)
+            {
+                output += Vector2.Distance(tour[i], tour[(i + 1) % tour.Length]);
+            }
+            return output;
+        }
+        public static float TourLengthSquared(this IEnumerable<Vector2> tour)
+        {
+            return new ReadOnlySpan<Vector2>(tour.ToArray()).TourLengthSquared();
+        }
+        public static float TourLengthSquared(this Span<Vector2> tour)
+        {
+            return new ReadOnlySpan<Vector2>(tour.ToArray()).TourLengthSquared();
+        }
+        public static float TourLengthSquared(this Memory<Vector2> tour)
+        {
+            return new ReadOnlySpan<Vector2>(tour.ToArray()).TourLengthSquared();
+        }
+        public static float TourLengthSquared(this ReadOnlySpan<Vector2> tour)
+        {
+            float output = 0;
+            for (int i = 0; i < tour.Length; i++)
+            {
+                output += Vector2.DistanceSquared(tour[i], tour[(i + 1) % tour.Length]);
+            }
+            return output;
+        }
         // same set
+        /// <summary>
+        /// Validates a permutation of a TSP set against another permutaion
+        /// </summary>
+        /// <param name="set">The set to be tested</param>
+        /// <param name="correctSet">A known valid set</param>
+        /// <returns>true if set is valid, else false</returns>
         public static bool ValidateTSPSet(this IEnumerable<Vector2> set, IEnumerable<Vector2> correctSet)
         {
-            string outNull = "";
-            return ValidateTSPSet(set, correctSet, out outNull);
-        }
-        public static bool ValidateTSPSet(this IEnumerable<Vector2> set, IEnumerable<Vector2> correctSet, out string reason)
-        {
-            bool sameCount = set.Count() == correctSet.Count();
-            bool samePoints = true;
-            foreach (var v in set)
+            if (set.Count() == correctSet.Count())
             {
-                int setCount = set.Where(x => x == v).Count();
-                int correctSetCount = correctSet.Where(x => x == v).Count();
-                bool contained = setCount == correctSetCount;
-                samePoints = samePoints && contained;
-            }
-            // Building reasons string
-            reason = "SET WAS VALID";
-            List<string> reasons = new();
-            if (!sameCount)
-            {
-                if (set.Count() < correctSet.Count()) { reasons.Add("set had too few points"); }
-                else { reasons.Add("set had too many points"); }
-            }
-            if (!samePoints) { reasons.Add("set didnt contain the same points as valid set"); }
-            if (reasons.Count > 0)
-            {
-                reason = reasons[0];
-                for (int i = 1; i < reasons.Count; i++)
+                var sortedSet = set.OrderBy(v => v.X).ThenBy(v => v.Y).ToArray();
+                var sortedCorrectSet = correctSet.OrderBy(v => v.X).ThenBy(v => v.Y).ToArray();
+                for (int i = 0; i < sortedSet.Length; i++)
                 {
-                    reason += ", " + reasons[i];
+                    if (sortedSet[i] != sortedCorrectSet[i])
+                    {
+                        return false;
+                    }
                 }
-
+                return true;
             }
-            return sameCount && samePoints;
+            else
+            {
+                return false;
+            }
+
+
         }
     }
 }

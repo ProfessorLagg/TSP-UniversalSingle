@@ -160,7 +160,7 @@ namespace TSP_UniversalSingle
             Console.WriteLine("Current Score: " + CurrentScore.ToString("n"));
             algorithm.Run();
             DateTime endTime = DateTime.Now;
-            if (!algorithm.Route.ValidateTSPSet(BestFound, out string errorReason)) { throw new Exception("ALGORITHM WAS NOT VALID. Reason: " + errorReason); }
+            if (!algorithm.Route.ValidateTSPSet(BestFound)) { throw new Exception("ALGORITHM WAS NOT VALID."); }
             if (algorithm.Route.Cost < BestFound.Cost)
             {
                 BestFound = new(algorithm.Route);
