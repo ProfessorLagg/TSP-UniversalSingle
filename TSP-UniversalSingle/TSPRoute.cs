@@ -146,9 +146,7 @@ namespace TSPStandard
         }
         public void SaveAsXMLFile(string path)
         {
-            OneTree MST = new(this);
-            MST.Generate();
-            SaveAsXMLFile(path, MST.Cost);
+            SaveAsXMLFile(path, this.Vectors.GetLowerBound());
         }
         public void SaveAsXMLFile(string path, float lowerBound)
         {

@@ -1,7 +1,8 @@
 {
   "profiles": {
     "TSP-UniversalSingle": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "-set:uy734.xml -seq:nn,swr,2op,swr"
     }
   }
 }

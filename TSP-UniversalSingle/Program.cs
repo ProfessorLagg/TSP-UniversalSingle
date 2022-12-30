@@ -160,7 +160,7 @@ namespace TSP_UniversalSingle
                         default: break;
                         // Long name
                         case "INSERTIONBUILD": RunUniversal(new InsertionBuild(BestFound)); break;
-                        case "NEARESTNEIGHBOR": RunUniversal(new InsertionBuild(BestFound)); break;
+                        case "NEARESTNEIGHBOR": RunUniversal(new NearestNeighbor(BestFound)); break;
                         case "TWOOPT": RunUniversal(new TwoOpt(BestFound)); break;
                         case "SWAP": RunUniversal(new Swap(BestFound)); break;
                         case "SLICEWINDOWBRUTEFORCE": RunUniversal(new SliceWindowBruteForce(BestFound,false)); break;
@@ -172,10 +172,13 @@ namespace TSP_UniversalSingle
                         case "SWP": goto case "SWAP";
                         case "SWB": goto case "SLICEWINDOWBRUTEFORCE";
                         case "SWR": goto case "SLICEWINDOWBRUTEFORCERECURSIVE";
+                        case "SWBR": goto case "SLICEWINDOWBRUTEFORCE";
                         //Aliases
                         case "2OPT": goto case "TWOOPT";
                         case "2-OPT": goto case "TWOOPT";
                         case "SLICEWINDOW": goto case "SLICEWINDOWBRUTEFORCE";
+                        case "SLICE": goto case "SLICEWINDOWBRUTEFORCE";
+                        case "SLICER": goto case "SLICEWINDOWBRUTEFORCE";
                         case "SLICEWINDOWRECURSE": goto case "SLICEWINDOWBRUTEFORCERECURSIVE";
                     }
                 }
@@ -252,9 +255,7 @@ namespace TSP_UniversalSingle
         static void CalculateLowerBound()
         {
             // Calculating Lower Bound for this set
-            OneTree MST = new(BestFound);
-            MST.Generate();
-            LowerBound = MST.Cost;
+            LowerBound = BestFound.GetLowerBound();
         }
     }
 }
