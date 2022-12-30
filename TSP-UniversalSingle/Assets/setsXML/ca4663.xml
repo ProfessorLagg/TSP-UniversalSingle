@@ -2,7 +2,7 @@
 <TSPSet>
   <name>ca4663</name>
   <dimension>4663</dimension>
-  <lowerBound>1323044.1</lowerBound>
+  <lowerBound>1132146.4</lowerBound>
   <permutationCost>47893124</permutationCost>
   <points>
     <point index="1" x="41800" y="82650" />

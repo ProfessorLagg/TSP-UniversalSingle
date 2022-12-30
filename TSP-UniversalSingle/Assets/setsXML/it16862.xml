@@ -2,7 +2,7 @@
 <TSPSet>
   <name>it16862</name>
   <dimension>16862</dimension>
-  <lowerBound>578172.6</lowerBound>
+  <lowerBound>498785.97</lowerBound>
   <permutationCost>7404091.5</permutationCost>
   <points>
     <point index="1" x="36683.332" y="15133.333" />

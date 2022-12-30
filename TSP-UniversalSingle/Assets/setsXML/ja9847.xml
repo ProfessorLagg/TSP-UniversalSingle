@@ -2,7 +2,7 @@
 <TSPSet>
   <name>ja9847</name>
   <dimension>9847</dimension>
-  <lowerBound>490438.16</lowerBound>
+  <lowerBound>428636.84</lowerBound>
   <permutationCost>5753162.5</permutationCost>
   <points>
     <point index="1" x="24050" y="123783.336" />

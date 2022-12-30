@@ -2,7 +2,7 @@
 <TSPSet>
   <name>qa194</name>
   <dimension>194</dimension>
-  <lowerBound>9789.879</lowerBound>
+  <lowerBound>8397.597</lowerBound>
   <permutationCost>39555.64</permutationCost>
   <points>
     <point index="1" x="24748.334" y="50840" />

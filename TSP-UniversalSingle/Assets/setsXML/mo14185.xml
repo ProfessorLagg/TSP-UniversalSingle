@@ -2,7 +2,7 @@
 <TSPSet>
   <name>mo14185</name>
   <dimension>14185</dimension>
-  <lowerBound>439207.22</lowerBound>
+  <lowerBound>379031.44</lowerBound>
   <permutationCost>5941455</permutationCost>
   <points>
     <point index="1" x="27683.334" y="12200" />

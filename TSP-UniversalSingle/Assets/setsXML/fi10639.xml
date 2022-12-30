@@ -2,7 +2,7 @@
 <TSPSet>
   <name>fi10639</name>
   <dimension>10639</dimension>
-  <lowerBound>538445.1</lowerBound>
+  <lowerBound>464394.56</lowerBound>
   <permutationCost>5716198.5</permutationCost>
   <points>
     <point index="1" x="59766.668" y="21366.666" />

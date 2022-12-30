@@ -2,7 +2,7 @@
 <TSPSet>
   <name>gr9882</name>
   <dimension>9882</dimension>
-  <lowerBound>313001.03</lowerBound>
+  <lowerBound>267859.9</lowerBound>
   <permutationCost>2842769.5</permutationCost>
   <points>
     <point index="1" x="34816.668" y="24100" />

@@ -2,7 +2,7 @@
 <TSPSet>
   <name>ei8246</name>
   <dimension>8246</dimension>
-  <lowerBound>215638.22</lowerBound>
+  <lowerBound>185437.89</lowerBound>
   <permutationCost>8032297</permutationCost>
   <points>
     <point index="1" x="51445" y="9479.444" />

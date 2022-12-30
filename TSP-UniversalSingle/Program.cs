@@ -37,15 +37,17 @@ namespace TSP_UniversalSingle
                 return score;
             }
         }
+        private static List<string> ArgsList = new();
+        private static string Folder_Assets = "";
+        private static string Folder_sets = "";
+        private static string Folder_setsXML = "";
+        private static List<string> Files_sets = new();
+        private static List<string> fullNames = new();
+
         static void Main(string[] args)
         {
             // Parsing folders and loading set file names
-            List<string> argsList = new(args);
-            string Folder_Assets;
-            string Folder_sets;
-            string Folder_setsXML;
-            List<string> Files_sets;
-            List<string> fullNames = new();
+            ArgsList = args.ToList();
             try
             {
                 Folder_Assets = Path.Combine(EXERoot, "Assets");
@@ -74,137 +76,139 @@ namespace TSP_UniversalSingle
                     Files_sets.Add(info.Name);
                 }
             }
-            // Parsing set file name
-            string setName;
-            string setParam = argsList.Find(arg => arg.Contains("-set:"));
-            if (!string.IsNullOrEmpty(setParam)) { setName = setParam.Replace("-set:", "").Trim(); PauseWhenFinished = false; } // Use the specified set
+            // Checking for convert argument
+            string convParam = ArgsList.Find(arg => arg.Contains("-convert"));
+            if (!string.IsNullOrEmpty(convParam)) { ConvertMissingXmlSets(); }
             else
-            {
-                
-                List<string> distincFileSets = Files_sets.Where(fileSet => fileSet.Contains(".xml")).ToList();
-                var tspFileSets = Files_sets.Where(fileSet => fileSet.Contains(".tsp"));
-                foreach (var tspFileSet in tspFileSets)
+            {// ACTUALLY DO TSP
+                // Parsing set file name
+                string setName;
+                string setParam = ArgsList.Find(arg => arg.Contains("-set:"));
+                if (!string.IsNullOrEmpty(setParam)) { setName = setParam.Replace("-set:", "").Trim(); PauseWhenFinished = false; } // Use the specified set
+                else
                 {
-                    if (!distincFileSets.Contains(tspFileSet.Replace(".tsp", ".xml")))
+                    List<string> distincFileSets = Files_sets.Where(fileSet => fileSet.Contains(".xml")).ToList();
+                    var tspFileSets = Files_sets.Where(fileSet => fileSet.Contains(".tsp"));
+                    foreach (var tspFileSet in tspFileSets)
                     {
-                        distincFileSets.Add(tspFileSet);
+                        if (!distincFileSets.Contains(tspFileSet.Replace(".tsp", ".xml")))
+                        {
+                            distincFileSets.Add(tspFileSet);
+                        }
+                    }
+                    Regex rgx = new(@"[^0-9]");
+                    distincFileSets = distincFileSets.OrderBy(nameStr => int.Parse(rgx.Replace(nameStr, ""))).ToList();
+                    int L = distincFileSets.Count;
+                    int log10L = (int)Math.Log10(L);
+                    string format = new string('0', log10L) + '0';
+
+                    for (int i = 0; i < L; i++)
+                    {
+                        Console.WriteLine(i.ToString(format) + ". " + distincFileSets[i]);
+                    }
+                    Console.WriteLine("\n");
+                    var (Left, Top) = Console.GetCursorPosition();
+                    int selection = -1;
+                    while (selection < 0 || selection >= L)
+                    {
+                        Console.SetCursorPosition(Left, Top);
+                        Console.WriteLine("Please pick a set:");
+                        string eraser = new(' ', Console.BufferWidth);
+                        Console.WriteLine(eraser);
+                        Console.SetCursorPosition(0, Console.GetCursorPosition().Top - 1);
+                        // Ask user about which set to use
+                        string? input = Console.ReadLine();
+                        if (!int.TryParse(input, out selection))
+                        {
+                            selection = -1;
+                        }
+                    }
+                    setName = distincFileSets[selection];
+                }
+                Console.Clear();
+                // Loading set
+                ToLog("Starting loading set: " + setName);
+                if (setName.Contains(".tsp"))
+                {
+                    string setPath = Path.Combine(Folder_sets, setName);
+                    BestFound = TSPRoute.FromTSPFile(setPath);
+                    CalculateLowerBound(); // Since TSP file format doesnt include pre-computed lowerBound, i have to calc it
+                }
+                else if (setName.Contains(".xml"))
+                {
+                    string setPath = Path.Combine(Folder_setsXML, setName);
+                    BestFound = TSPRoute.FromXMLFile(setPath, out LowerBound);
+                }
+                ToLog("Finished loading set: " + setName + "\n");
+                // Priting set info
+                ToLog("Name:        " + setName);
+                ToLog("Length:      " + BestFound.Length.ToString());
+                ToLog("Lower Bound: " + LowerBound.ToString("n"));
+                // Parsing Level argument
+
+                // Running sequence
+                string seqParam = ArgsList.Find(arg => arg.Contains("-seq:"));
+                if (string.IsNullOrEmpty(seqParam))
+                {
+                    // Run default
+                    RunUniversal(new InsertionBuild(BestFound));
+                    RunUniversal(new SliceWindowBruteForce(BestFound));
+                }
+                else
+                {
+                    // Parse sequence
+                    string[] SequenceStrings = seqParam.Replace("-seq:", "").Trim().Split(',');
+                    foreach (string seqString in SequenceStrings)
+                    {
+                        string seqName = seqString.Trim().ToUpper();
+                        switch (seqName)
+                        {
+                            default: break;
+                            // Long name
+                            case "INSERTIONBUILD": RunUniversal(new InsertionBuild(BestFound)); break;
+                            case "NEARESTNEIGHBOR": RunUniversal(new NearestNeighbor(BestFound)); break;
+                            case "TWOOPT": RunUniversal(new TwoOpt(BestFound)); break;
+                            case "SWAP": RunUniversal(new Swap(BestFound)); break;
+                            case "SLICEWINDOWBRUTEFORCE": RunUniversal(new SliceWindowBruteForce(BestFound, false)); break;
+                            case "SLICEWINDOWBRUTEFORCERECURSIVE": RunUniversal(new SliceWindowBruteForce(BestFound, true)); break;
+                            // Short name
+                            case "INB": goto case "INSERTIONBUILD";
+                            case "NN": goto case "NEARESTNEIGHBOR";
+                            case "2OP": goto case "TWOOPT";
+                            case "SWP": goto case "SWAP";
+                            case "SWB": goto case "SLICEWINDOWBRUTEFORCE";
+                            case "SWR": goto case "SLICEWINDOWBRUTEFORCERECURSIVE";
+                            case "SWBR": goto case "SLICEWINDOWBRUTEFORCE";
+                            //Aliases
+                            case "2OPT": goto case "TWOOPT";
+                            case "2-OPT": goto case "TWOOPT";
+                            case "SLICEWINDOW": goto case "SLICEWINDOWBRUTEFORCE";
+                            case "SLICE": goto case "SLICEWINDOWBRUTEFORCE";
+                            case "SLICER": goto case "SLICEWINDOWBRUTEFORCE";
+                            case "SLICEWINDOWRECURSE": goto case "SLICEWINDOWBRUTEFORCERECURSIVE";
+                        }
                     }
                 }
-                Regex rgx = new(@"[^0-9]");
-                distincFileSets = distincFileSets.OrderBy(nameStr => int.Parse(rgx.Replace(nameStr, ""))).ToList();
-                int L = distincFileSets.Count;
-                int log10L = (int)Math.Log10(L);
-                string format = new string('0', log10L) + '0';
-
-                for (int i = 0; i < L; i++)
+                // Creating output folder
+                string Path_OutputFolder;
+                string fileName = DateTime.Now.ToString(@"yyyyMMdd-HHmmss") + "_" + BestFound.RouteName + ".xml";
+                string Path_OutputFile;
+                try
                 {
-                    Console.WriteLine(i.ToString(format) + ". " + distincFileSets[i]);
+                    Path_OutputFolder = Path.Combine(EXERoot, "Output");
+                    Path_OutputFile = Path.Combine(Path_OutputFolder, fileName);
                 }
-                Console.WriteLine("\n");
-                var (Left, Top) = Console.GetCursorPosition();
-                int selection = -1;
-                while(selection < 0 || selection >= L)
+                catch (System.ArgumentNullException)
                 {
-                    Console.SetCursorPosition(Left,Top);
-                    Console.WriteLine("Please pick a set:");
-                    string eraser = new(' ', Console.BufferWidth);
-                    Console.WriteLine(eraser);
-                    Console.SetCursorPosition(0, Console.GetCursorPosition().Top - 1);
-                    // Ask user about which set to use
-                    string? input = Console.ReadLine();
-                    if(!int.TryParse(input, out selection))
-                    {
-                        selection = -1;
-                    }
+                    Path_OutputFolder = @".\Output";
+                    Path_OutputFile = Path.Combine(Path_OutputFolder, fileName);
                 }
-                setName = distincFileSets[selection];
+                if (!Directory.Exists(Path_OutputFolder)) { Directory.CreateDirectory(Path_OutputFolder); }
+                //SAVE FILE
+                BestFound.SaveAsXMLFile(Path_OutputFile, LowerBound);
+                Console.WriteLine("Saved output to: " + Path_OutputFile);
             }
-            Console.Clear();
-            // Loading set
-            ToLog("Starting loading set: " + setName);
-            if (setName.Contains(".tsp"))
-            {
-                string setPath = Path.Combine(Folder_sets, setName);
-                BestFound = TSPRoute.FromTSPFile(setPath);
-                CalculateLowerBound(); // Since TSP file format doesnt include pre-computed lowerBound, i have to calc it
-            }
-            else if (setName.Contains(".xml"))
-            {
-                string setPath = Path.Combine(Folder_setsXML, setName);
-                BestFound = TSPRoute.FromXMLFile(setPath,out LowerBound);
-            }
-            ToLog("Finished loading set: " + setName + "\n");
-            // Priting set info
-            ToLog("Name:        " + setName);
-            ToLog("Length:      " + BestFound.Length.ToString());
-            ToLog("Lower Bound: " + LowerBound.ToString("n"));
-            // Parsing Level argument
-
-            // Running sequence
-            string seqParam = argsList.Find(arg => arg.Contains("-seq:"));
-            if (string.IsNullOrEmpty(seqParam))
-            {
-                // Run default
-                RunUniversal(new InsertionBuild(BestFound));
-                RunUniversal(new SliceWindowBruteForce(BestFound));
-            }
-            else
-            {
-                // Parse sequence
-                string[] SequenceStrings = seqParam.Replace("-seq:", "").Trim().Split(',');
-                foreach(string seqString in SequenceStrings)
-                {
-                    string seqName = seqString.Trim().ToUpper();
-                    switch(seqName)
-                    {
-                        default: break;
-                        // Long name
-                        case "INSERTIONBUILD": RunUniversal(new InsertionBuild(BestFound)); break;
-                        case "NEARESTNEIGHBOR": RunUniversal(new NearestNeighbor(BestFound)); break;
-                        case "TWOOPT": RunUniversal(new TwoOpt(BestFound)); break;
-                        case "SWAP": RunUniversal(new Swap(BestFound)); break;
-                        case "SLICEWINDOWBRUTEFORCE": RunUniversal(new SliceWindowBruteForce(BestFound,false)); break;
-                        case "SLICEWINDOWBRUTEFORCERECURSIVE": RunUniversal(new SliceWindowBruteForce(BestFound,true)); break;
-                        // Short name
-                        case "INB": goto case "INSERTIONBUILD";
-                        case "NN": goto case "NEARESTNEIGHBOR";
-                        case "2OP": goto case "TWOOPT";
-                        case "SWP": goto case "SWAP";
-                        case "SWB": goto case "SLICEWINDOWBRUTEFORCE";
-                        case "SWR": goto case "SLICEWINDOWBRUTEFORCERECURSIVE";
-                        case "SWBR": goto case "SLICEWINDOWBRUTEFORCE";
-                        //Aliases
-                        case "2OPT": goto case "TWOOPT";
-                        case "2-OPT": goto case "TWOOPT";
-                        case "SLICEWINDOW": goto case "SLICEWINDOWBRUTEFORCE";
-                        case "SLICE": goto case "SLICEWINDOWBRUTEFORCE";
-                        case "SLICER": goto case "SLICEWINDOWBRUTEFORCE";
-                        case "SLICEWINDOWRECURSE": goto case "SLICEWINDOWBRUTEFORCERECURSIVE";
-                    }
-                }
-
-
-            }
-            
-
-            // Creating output folder
-            string Path_OutputFolder;
-            string fileName = DateTime.Now.ToString(@"yyyyMMdd-HHmmss") + "_" + BestFound.RouteName + ".xml";
-            string Path_OutputFile;
-            try
-            {
-                Path_OutputFolder = Path.Combine(EXERoot, "Output");
-                Path_OutputFile = Path.Combine(Path_OutputFolder, fileName);
-            }
-            catch (System.ArgumentNullException)
-            {
-                Path_OutputFolder = @".\Output";
-                Path_OutputFile = Path.Combine(Path_OutputFolder, fileName);
-            }
-            if (!Directory.Exists(Path_OutputFolder)) { Directory.CreateDirectory(Path_OutputFolder); }
-            //SAVE FILE
-            BestFound.SaveAsXMLFile(Path_OutputFile,LowerBound);
-            Console.WriteLine("Saved output to: " + Path_OutputFile);
+ 
             if (PauseWhenFinished)
             {
                 Console.WriteLine("\n\n Press any key to exit...");
@@ -256,6 +260,42 @@ namespace TSP_UniversalSingle
         {
             // Calculating Lower Bound for this set
             LowerBound = BestFound.GetLowerBound();
+        }
+        static void ConvertMissingXmlSets()
+        {
+            var sets_tsp = Files_sets.Where(s => s.Contains(".tsp"));
+            var sets_xml = Files_sets.Where(s => s.Contains(".xml"));
+            var sets_xml_missing = sets_tsp.Where(s => !sets_xml.Contains(s.Replace(".tsp", ".xml"))).ToArray();
+            int missCount = sets_xml_missing.Length;
+            ToLog("Converting " + missCount + " sets from .tsp to .xml" + "\n");
+            List<TSPRoute> routes = new();
+            foreach(var setName in sets_xml_missing)
+            {
+                
+                string setPath = Path.Combine(Folder_sets, setName);
+                TSPRoute _route = TSPRoute.FromTSPFile(setPath);
+                routes.Add(_route);
+            }
+            foreach(var _route in routes.OrderBy(r => r.Length))
+            {
+                // LOADING TSP SET
+                string setName = _route.RouteName;
+                ToLog("Loaded set: " + setName);
+                // CALCULATING lower bound
+                ToLog("Calculating lower bound for set: " + setName);
+                Stopwatch timer = Stopwatch.StartNew();
+                float _lowerBound = _route.GetLowerBound();
+                timer.Stop();
+                ToLog("Finished calculating lower bound. Took: " + timer.Elapsed.ToString());
+                ToLog("Lower bound: " + _lowerBound.ToString());
+                // Creating output folder
+                string fileName = _route.RouteName + ".xml";
+                string Path_OutputFile = Path.Combine(Folder_setsXML, fileName);
+                if (!Directory.Exists(Folder_setsXML)) { Directory.CreateDirectory(Folder_setsXML); }
+                //SAVE FILE
+                _route.SaveAsXMLFile(Path_OutputFile, _lowerBound);
+                ToLog("Saved set: " + setName + " to: " + Path_OutputFile + "\n");
+            }
         }
     }
 }

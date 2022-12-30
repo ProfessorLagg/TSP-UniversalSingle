@@ -2,7 +2,7 @@
 <TSPSet>
   <name>zi929</name>
   <dimension>929</dimension>
-  <lowerBound>99893.37</lowerBound>
+  <lowerBound>83759.695</lowerBound>
   <permutationCost>933843.4</permutationCost>
   <points>
     <point index="1" x="15700" y="30316.666" />

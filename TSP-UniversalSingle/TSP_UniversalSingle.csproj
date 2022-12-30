@@ -9,7 +9,7 @@
 		<Nullable>enable</Nullable>
 		<AssemblyName>$(MSBuildProjectName)</AssemblyName>
 		<PublishTrimmed>true</PublishTrimmed>
-		<Version>2.0.0.0</Version>
+		<Version>2.1.0.0</Version>
 		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
 		<PublishAot>true</PublishAot>
 	</PropertyGroup>

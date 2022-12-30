@@ -2,7 +2,7 @@
 <TSPSet>
   <name>tz6117</name>
   <dimension>6117</dimension>
-  <lowerBound>410050.62</lowerBound>
+  <lowerBound>348484.06</lowerBound>
   <permutationCost>7018343.5</permutationCost>
   <points>
     <point index="1" x="1006.1111" y="30941.389" />

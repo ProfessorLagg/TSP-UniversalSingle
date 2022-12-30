@@ -2,7 +2,7 @@
 <TSPSet>
   <name>wi29</name>
   <dimension>29</dimension>
-  <lowerBound>23807.076</lowerBound>
+  <lowerBound>24000.836</lowerBound>
   <permutationCost>52284.07</permutationCost>
   <points>
     <point index="1" x="20833.334" y="17100" />

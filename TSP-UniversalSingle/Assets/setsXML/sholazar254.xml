@@ -2,7 +2,7 @@
 <TSPSet>
   <name>sholazar254</name>
   <dimension>254</dimension>
-  <lowerBound>435.85196</lowerBound>
+  <lowerBound>415.39096</lowerBound>
   <permutationCost>3631.5786</permutationCost>
   <points>
     <point index="1" x="18.2" y="43.6" />

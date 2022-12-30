@@ -2,7 +2,7 @@
 <TSPSet>
   <name>stormpeaks165</name>
   <dimension>165</dimension>
-  <lowerBound>354105.3</lowerBound>
+  <lowerBound>318776.16</lowerBound>
   <permutationCost>3814666.2</permutationCost>
   <points>
     <point index="1" x="25003.996" y="45314.016" />

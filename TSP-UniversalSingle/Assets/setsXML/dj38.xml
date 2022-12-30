@@ -2,7 +2,7 @@
 <TSPSet>
   <name>dj38</name>
   <dimension>38</dimension>
-  <lowerBound>6543.6245</lowerBound>
+  <lowerBound>6327.3545</lowerBound>
   <permutationCost>17099.02</permutationCost>
   <points>
     <point index="1" x="11003.611" y="42102.5" />

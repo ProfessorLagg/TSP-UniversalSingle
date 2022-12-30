@@ -2,7 +2,7 @@
 <TSPSet>
   <name>lagg50</name>
   <dimension>50</dimension>
-  <lowerBound>57531.527</lowerBound>
+  <lowerBound>50328.047</lowerBound>
   <permutationCost>282073.4</permutationCost>
   <points>
     <point index="1" x="6035.296" y="8959.153" />

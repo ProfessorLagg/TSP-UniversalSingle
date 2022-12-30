@@ -2,7 +2,7 @@
 <TSPSet>
   <name>mu1979</name>
   <dimension>1979</dimension>
-  <lowerBound>87968.195</lowerBound>
+  <lowerBound>75252.66</lowerBound>
   <permutationCost>1080606.4</permutationCost>
   <points>
     <point index="1" x="16700" y="53233.332" />

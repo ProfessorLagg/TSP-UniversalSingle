@@ -2,7 +2,7 @@
 <TSPSet>
   <name>kz9976</name>
   <dimension>9976</dimension>
-  <lowerBound>1095300.9</lowerBound>
+  <lowerBound>941021.5</lowerBound>
   <permutationCost>55471976</permutationCost>
   <points>
     <point index="1" x="40533.332" y="68966.664" />

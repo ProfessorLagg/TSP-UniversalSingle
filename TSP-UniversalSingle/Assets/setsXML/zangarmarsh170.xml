@@ -2,7 +2,7 @@
 <TSPSet>
   <name>zangarmarsh170</name>
   <dimension>170</dimension>
-  <lowerBound>650.34155</lowerBound>
+  <lowerBound>545.77673</lowerBound>
   <permutationCost>2304.2915</permutationCost>
   <points>
     <point index="1" x="8.4" y="53.9" />
