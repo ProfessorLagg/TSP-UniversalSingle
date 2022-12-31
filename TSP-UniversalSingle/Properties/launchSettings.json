@@ -1,8 +1,7 @@
 {
   "profiles": {
     "TSP-UniversalSingle": {
-      "commandName": "Project",
-      "commandLineArgs": "-convert"
+      "commandName": "Project"
     }
   }
 }

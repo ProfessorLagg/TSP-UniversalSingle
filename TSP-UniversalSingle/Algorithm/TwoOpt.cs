@@ -12,40 +12,42 @@ namespace TSPStandard.Algorithm
             this.AlgorithmType = AlgorithmType.TwoOpt;
         }
         public override void Run()
-        {
+        { // V4_2
             int L = this.Route.Length;
             bool changed = false;
+            Vector2[] localRoute = this.Route.ToArray();
+            Span<Vector2> localSpan = new(localRoute);
+            float bestCost = localSpan.Cost();
+            int min_i = 1;
             do
             {
                 changed = false;
-                Vector2[] tempBase = Route.ToArray();
-                Vector2[] bestTour = tempBase.ToArray();
-                float bestCost = bestTour.Cost();
-                Parallel.For(1, L, A =>
+                for (int i = min_i; i < L; i++)
                 {
-                    Vector2[] workerArray = tempBase.ToArray();
-                    Span<Vector2> workerSpan = new(workerArray);
-                    for (int B = 0; B < A; B++)
+                    for (int j = 0; j < i; j++)
                     {
-                        workerSpan.Slice(B, A - B).Reverse();
-                        if (workerSpan.Cost() < bestCost)
+                        localSpan.Slice(j, i - j).Reverse();
+                        if (localSpan.Cost() < bestCost)
                         {
-                            lock (bestTour)
-                            {
-                                bestTour = workerArray.ToArray();
-                                bestCost = bestTour.Cost();
-                            }
+                            changed = true;
+                            bestCost = localSpan.Cost();
+                            min_i = j - 1;
+                            break;
                         }
-                        workerSpan.Slice(B, A - B).Reverse();
+                        else
+                        {
+                            localSpan.Slice(j, i - j).Reverse();
+                        }
                     }
-                });
-                TSPRoute bestFound = new(this.Route.RouteName, bestTour.ToArray());
-                if (bestFound.Cost < this.Route.Cost)
-                {
-                    this.Route = new(bestFound);
-                    changed = true;
+                    if (changed) { break; }
                 }
             } while (changed);
+
+            TSPRoute bestFound = new(this.Route.RouteName, localRoute.ToArray());
+            if (bestFound.Cost < this.Route.Cost)
+            {
+                this.Route = new(bestFound);
+            }
         }
     }
 }
